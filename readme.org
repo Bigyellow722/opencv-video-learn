@@ -1,0 +1,34 @@
+#+title: 使用opencv处理实验数据
+#+author: lhkwqy
+#+date:
+
+
+* 找到需要的近似矩形色块
+
+矩形作为多边形的一种，首先需要对色块的图形进行判断分类
+
+
+** 矩形的检测
+
+代码里面实现的矩形检测规则
+
+1. 根据面积判断
+   使用多边形逼近色块的面积，记作色块的近似面积 ~contour_area~ ；计算出能包围该色块最小矩形的面积，记作色块的矩形面积 ~box_area~ ；
+   误差计算公式如下：
+   #+begin_src math
+      (contour_area - box_area) / contour_area
+   #+end_src
+
+   #+begin_src comment
+
+      误差小于5%
+  
+   #+end_src
+
+2. 根据角度判断
+
+   #+begin_src comment
+
+     误差小于10度。
+
+   #+end_src
