@@ -311,6 +311,41 @@ def circleDetect(img, denoised):
     print("Circle Count: {0}".format(circles.shape[1]))
 
 
+def roundRectageDetect(img, denoised):
+    """圆角矩形的检测函数。
+
+    Args:
+        img (np.ndarray): 原图。
+        denoised (np.ndarray): 去噪后的图像。
+    """
+    # 二值化
+    thresh = binarize(denoised, "Canny")
+
+    # 轮廓检测
+    contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    img_contours = np.copy(img)
+    cv2.drawContours(img_contours, contours, -1, (255, 0, 0), 2)
+    cv2.namedWindow("Contours", cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
+    cv2.imshow("Contours", img_contours)
+
+    contours_p = []
+    for i in range(0, len(contours)):
+        area = cv2.contourArea(contours[i])
+        if (area > 9 and area < 25):
+            contours_p.append(contours[i])
+            #x, y, w, h= cv2.boundingRect(contours[i])
+            #print("x:", x, "y:", y, "w:", w, "h:", h, "\n")
+            #cropped_img = img[y:y+h, x:x+w]
+            #cv2.imshow("cropped image", cropped_img);
+            print(area)
+    img_contours_p = np.copy(img)
+    cv2.drawContours(img_contours_p, contours_p, -1, (255, 0, 0), 2)
+    cv2.namedWindow("Contours p", cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
+    cv2.imshow("Contours p", img_contours_p)
+
+
+
+
 def shapeDetect(img_path):
     """形状检测函数。
 
@@ -331,14 +366,16 @@ def shapeDetect(img_path):
     denoised = denoise(gray, "MedianBlur")
 
     # 三角形与矩形的检测
-    approxs = PolygonContainer("ApproxPolygons", 0, lambda contour, approx : True)
+    #approxs = PolygonContainer("ApproxPolygons", 0, lambda contour, approx : True)
     #triangles = PolygonContainer("Triangle", 3, lambda contour, approx : True)
-    rectangles = PolygonContainer("Rectangle", 4, rectangleCheck)
+    #rectangles = PolygonContainer("Rectangle", 4, rectangleCheck)
     #polygonDetect(img, denoised, approxs, triangles, rectangles)
-    polygonDetect(img, denoised, approxs, rectangles)
+    #polygonDetect(img, denoised, approxs, rectangles)
 
     # 圆的检测
     #circleDetect(img, denoised)
+
+    roundRectageDetect(img, denoised)
 
 
 def main():
