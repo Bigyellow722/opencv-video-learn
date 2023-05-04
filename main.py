@@ -234,7 +234,7 @@ def polygonDetect(img, denoised, approxs, *polygonContainers):
             mc = contours[0][0]
         else:
             mc = [mu['m10'] / mu['m00'], mu['m01'] / mu['m00']]
-        mc = np.int0(mc)
+        mc = np.intp(mc)
         centroids.append(mc)
 
     # 去除重复的轮廓
