@@ -292,12 +292,12 @@ def drawPlot():
 
 def main():
 
-    '''
-    degree_25 = '/home/wqy/rasp_space/videos/25-degree'
-    file_list = findAllPng(degree_25)
+
+    degree_40 = '/home/wqy/rasp_space/videos/40-degree'
+    file_list = findAllPng(degree_40)
     for img_path in file_list:
         print(img_path)
-        shapeDetect(img_path, Degree.DEGREE_25)
+        shapeDetect(img_path, Degree.DEGREE_40)
     print(b_list)
     print(g_list)
     print(r_list)
@@ -319,7 +319,7 @@ def main():
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
+    '''
 
 if __name__ == '__main__':
     main()
