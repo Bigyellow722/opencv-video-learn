@@ -119,8 +119,8 @@ def maskImage(hsv_image, degree):
         hsv_up = np.array([175, 220, 200])
     elif degree == Degree.DEGREE_40:
         #40-degree:
-        hsv_low = np.array([70, 30, 55])
-        hsv_up = np.array([175, 260, 210])
+        hsv_low = np.array([100, 40, 100])
+        hsv_up = np.array([130, 190, 250])
     elif degree == Degree.DEGREE_50:
         #50-degree:
         hsv_low = np.array([40, 40, 55])
@@ -177,7 +177,7 @@ def shapeDetect(img_path, degree):
     if degree == Degree.DEGREE_25:
         cropped_img = img[200:440, 500:880]
     elif degree == Degree.DEGREE_40:
-        cropped_img = img[200:440, 500:980]
+        cropped_img = img[200:440, 375:850]
     elif degree == Degree.DEGREE_50:
         cropped_img = img[200:440, 500:980]
     elif degree == Degree.DEGREE_60:
@@ -213,6 +213,7 @@ def shapeDetect(img_path, degree):
     #contours, _ = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
+    '''
     # 计算轮廓的质心
     centroids = []
     for c in contours:
@@ -226,7 +227,9 @@ def shapeDetect(img_path, degree):
 
     # 去除重复的轮廓
     contours, centroids = filterRepeatedContours(contours, centroids)
+    '''
 
+    #print(contours)
     for contour in contours:
         (x, y, w, h) = cv2.boundingRect(contour)
         area = w * h
@@ -234,7 +237,7 @@ def shapeDetect(img_path, degree):
         if degree == Degree.DEGREE_25:
             area_list = [32000, 50000]
         elif degree == Degree.DEGREE_40:
-            area_list = [32000, 50000]
+            area_list = [32000, 52000]
         elif degree == Degree.DEGREE_50:
             area_list = [32000, 50000]
         elif degree == Degree.DEGREE_60:
@@ -245,11 +248,11 @@ def shapeDetect(img_path, degree):
         #global rgb_counter
         #print("shapeDetect", rgb_counter);
         if (area > area_list[0] and area < area_list[1]):
-            #print("x:", x, "y:", y, "w:", w, "h:", h)
+            print("x:", x, "y:", y, "w:", w, "h:", h)
             rect_img = cv2.rectangle(cropped_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            #cv2.imshow("rect", rect_img)
+            cv2.imshow("rect", rect_img)
             rect_out = cropped_img[y:y+h, x:x+w]
-            #cv2.imshow("rect_out", rect_out)
+            cv2.imshow("rect_out", rect_out)
             drawBgrPlt(rect_out)
 
 
@@ -303,15 +306,15 @@ def main():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     '''
-    img_path = '/home/wqy/rasp_space/videos/40-degree/0001.png'
+    img_path = '/home/wqy/rasp_space/videos/40-degree/1200.png'
 
-    global rgb_counter
-    print("before shapeDetect", rgb_counter);
+    #global rgb_counter
+    #print("before shapeDetect", rgb_counter);
     shapeDetect(img_path, Degree.DEGREE_40)
-    print("after shapeDetect", rgb_counter);
-    print(b_list)
-    print(g_list)
-    print(r_list)
+    #print("after shapeDetect", rgb_counter);
+    #print(b_list)
+    #print(g_list)
+    #print(r_list)
     print('\n')
 
     cv2.waitKey(0)
