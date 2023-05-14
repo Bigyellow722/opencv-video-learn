@@ -123,8 +123,12 @@ def maskImage(hsv_image, degree, time):
         hsv_up = np.array([130, 190, 250])
     elif degree == Degree.DEGREE_50:
         #50-degree:
-        hsv_low = np.array([40, 40, 55])
-        hsv_up = np.array([175, 230, 160])
+        if time >= 100:
+            hsv_low = np.array([0, 10, 55])
+            hsv_up = np.array([170, 210, 180])
+        else:
+            hsv_low = np.array([20, 25, 55])
+            hsv_up = np.array([160, 210, 140])
     elif degree == Degree.DEGREE_60:
         #60-degree:
         if time < 10:
@@ -195,7 +199,7 @@ def shapeDetect(img_path, degree, time):
     elif degree == Degree.DEGREE_40:
         cropped_img = img[200:440, 375:850]
     elif degree == Degree.DEGREE_50:
-        cropped_img = img[200:440, 500:980]
+        cropped_img = img[150:440, 375:980]
     elif degree == Degree.DEGREE_60:
         cropped_img = img[135:480, 500:1000]
     else:
@@ -311,7 +315,7 @@ def drawPlot():
 
 file_prefix = ["25-degree", "40-degree", "50-degree", "60-degree"];
 
-def wirte_bgr_to_file(degree):
+def write_bgr_to_file(degree):
     global file_prefix
     r_file=open(file_prefix[degree] + "_r.txt", "w")
     g_file=open(file_prefix[degree] + "_g.txt", "w")
@@ -333,25 +337,25 @@ def wirte_bgr_to_file(degree):
 def main():
 
 
-    '''
     degree_60 = '/home/wqy/rasp_space/videos/60-degree'
     file_list = findAllPng(degree_60)
     for img_path in file_list:
         print(img_path)
-        shapeDetect(img_path, Degree.DEGREE_60)
+        shapeDetect(img_path, Degree.DEGREE_60, int(img_path[-8:-4]))
     print(b_list)
     print(g_list)
     print(r_list)
     print('\n')
     drawPlot()
+    write_bgr_to_file(Degree.DEGREE_60)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     '''
-    img_path = '/home/wqy/rasp_space/videos/25-degree/0001.png'
+    img_path = '/home/wqy/rasp_space/videos/50-degree/0100.png'
 
     #global rgb_counter
     #print("before shapeDetect", rgb_counter);
-    shapeDetect(img_path, Degree.DEGREE_60, int(img_path[-8:-4]))
+    shapeDetect(img_path, Degree.DEGREE_50, int(img_path[-8:-4]))
     #print("after shapeDetect", rgb_counter);
     #print(b_list)
     #print(g_list)
@@ -360,7 +364,7 @@ def main():
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
+    '''
 
 if __name__ == '__main__':
     main()
