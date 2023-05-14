@@ -112,7 +112,7 @@ def getPosHSV(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         print(param[y, x])
 
-def maskImage(hsv_image, degree):
+def maskImage(hsv_image, degree, time):
     if degree == Degree.DEGREE_25:
         #25-degree:
         hsv_low = np.array([80, 30, 55])
@@ -127,8 +127,24 @@ def maskImage(hsv_image, degree):
         hsv_up = np.array([175, 230, 160])
     elif degree == Degree.DEGREE_60:
         #60-degree:
-        hsv_low = np.array([15, 60, 55])
-        hsv_up = np.array([150, 260, 150])
+        if time < 10:
+            hsv_low = np.array([20, 60, 80])
+            hsv_up = np.array([180, 210, 220])
+        elif time > 1000:
+            hsv_low = np.array([15, 30, 65])
+            hsv_up = np.array([120, 140, 200])
+        elif time <= 700:
+            hsv_low = np.array([20, 48, 80])
+            hsv_up = np.array([130, 255, 240])
+        elif time <= 710:
+            hsv_low = np.array([20, 40, 150])
+            hsv_up = np.array([130, 255, 240])
+        elif time < 831:
+            hsv_low = np.array([20, 50, 150])
+            hsv_up = np.array([130, 255, 240])
+        else:
+            hsv_low = np.array([20, 40, 80])
+            hsv_up = np.array([120, 255, 240])
     else:
         hsv_low = np.array([40, 40, 55])
         hsv_up = np.array([175, 230, 160])
@@ -164,7 +180,7 @@ def drawBgrPlt(img):
 
 
 
-def shapeDetect(img_path, degree):
+def shapeDetect(img_path, degree, time):
     img = cv2.imread(img_path)
 
     print(img.shape)
@@ -181,7 +197,7 @@ def shapeDetect(img_path, degree):
     elif degree == Degree.DEGREE_50:
         cropped_img = img[200:440, 500:980]
     elif degree == Degree.DEGREE_60:
-        cropped_img = img[200:500, 500:980]
+        cropped_img = img[135:480, 500:1000]
     else:
         cropped_img = img
 
@@ -197,7 +213,7 @@ def shapeDetect(img_path, degree):
     showImgInNewWindow("HSV", hsv)
     cv2.setMouseCallback("HSV", getPosHSV, hsv)
 
-    mask_img = maskImage(hsv, degree)
+    mask_img = maskImage(hsv, degree, time)
 
     gray = cv2.cvtColor(mask_img, cv2.COLOR_BGR2GRAY)
 
@@ -213,7 +229,7 @@ def shapeDetect(img_path, degree):
     #contours, _ = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    '''
+
     # 计算轮廓的质心
     centroids = []
     for c in contours:
@@ -227,7 +243,7 @@ def shapeDetect(img_path, degree):
 
     # 去除重复的轮廓
     contours, centroids = filterRepeatedContours(contours, centroids)
-    '''
+
 
     #print(contours)
     for contour in contours:
@@ -241,7 +257,7 @@ def shapeDetect(img_path, degree):
         elif degree == Degree.DEGREE_50:
             area_list = [32000, 50000]
         elif degree == Degree.DEGREE_60:
-            area_list = [32000, 50000]
+            area_list = [60000, 70000]
         else:
             area_list = [32000, 50000]
 
@@ -251,7 +267,10 @@ def shapeDetect(img_path, degree):
             print("x:", x, "y:", y, "w:", w, "h:", h)
             rect_img = cv2.rectangle(cropped_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
             cv2.imshow("rect", rect_img)
-            rect_out = cropped_img[y:y+h, x:x+w]
+            if degree == Degree.DEGREE_60:
+                rect_out = cropped_img[y:y+h-10, x+30:x+w-30]
+            else:
+                rect_out = cropped_img[y:y+h, x:x+w]
             cv2.imshow("rect_out", rect_out)
             drawBgrPlt(rect_out)
 
@@ -293,11 +312,12 @@ def drawPlot():
 def main():
 
 
-    degree_40 = '/home/wqy/rasp_space/videos/40-degree'
-    file_list = findAllPng(degree_40)
+    '''
+    degree_60 = '/home/wqy/rasp_space/videos/60-degree'
+    file_list = findAllPng(degree_60)
     for img_path in file_list:
         print(img_path)
-        shapeDetect(img_path, Degree.DEGREE_40)
+        shapeDetect(img_path, Degree.DEGREE_60)
     print(b_list)
     print(g_list)
     print(r_list)
@@ -306,11 +326,11 @@ def main():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     '''
-    img_path = '/home/wqy/rasp_space/videos/40-degree/1200.png'
+    img_path = '/home/wqy/rasp_space/videos/60-degree/0999.png'
 
     #global rgb_counter
     #print("before shapeDetect", rgb_counter);
-    shapeDetect(img_path, Degree.DEGREE_40)
+    shapeDetect(img_path, Degree.DEGREE_60, int(img_path[-8:-4]))
     #print("after shapeDetect", rgb_counter);
     #print(b_list)
     #print(g_list)
@@ -319,7 +339,7 @@ def main():
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    '''
+
 
 if __name__ == '__main__':
     main()
