@@ -309,6 +309,27 @@ def drawPlot():
     plt.show()
 
 
+file_prefix = ["25-degree", "40-degree", "50-degree", "60-degree"];
+
+def wirte_bgr_to_file(degree):
+    global file_prefix
+    r_file=open(file_prefix[degree] + "_r.txt", "w")
+    g_file=open(file_prefix[degree] + "_g.txt", "w")
+    b_file=open(file_prefix[degree] + "_b.txt", "w")
+    global r_list
+    global g_list
+    global b_list
+    for r in r_list:
+        r_file.write(r+"\n")
+    for g in g_list:
+        g_file.write(g+"\n")
+    for b in b_list:
+        b_file.write(b+"\n")
+    r_file.close()
+    r_file.close()
+    r_file.close()
+
+
 def main():
 
 
@@ -326,7 +347,7 @@ def main():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     '''
-    img_path = '/home/wqy/rasp_space/videos/60-degree/0999.png'
+    img_path = '/home/wqy/rasp_space/videos/25-degree/0001.png'
 
     #global rgb_counter
     #print("before shapeDetect", rgb_counter);
