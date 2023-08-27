@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import leastsq
 from scipy.optimize import curve_fit
 
-wb = load_workbook(filename="/home/wqy/Downloads/s-t.xlsx")
+wb = load_workbook(filename="/home/wqy/code/py-project/src/s-t-1.xlsx")
 
 
 sheets = wb.sheetnames
@@ -37,31 +37,35 @@ def func(x, a, b):
     return a*np.exp(b/x)
 
 
-t_25 = col_to_list(4, 1, 1)
-s_25 = col_to_list(4, 2, 2)
+t_25 = col_to_list(3, 1, 1)
+s_25 = col_to_list(3, 2, 2)
+#print(t_25[:10])
+#print('\n')
+
 
 np_t_25 = np.array(t_25)
 np_s_25 = np.array(s_25)
 
-p = np.polynomial.Polynomial.fit(np_t_25, np_s_25, deg=10)
-plt.plot(np_t_25, np_s_25, 's', label='original values')
-plt.plot(np_t_25, p(np_t_25), 'r', label='Power series')
+print(np_s_25[1000:1100])
 
-plt.legend()
-plt.show()
-print(p)
+#p = np.polynomial.Polynomial.fit(np_t_25, np_s_25, deg=10)
+#plt.plot(np_t_25, np_s_25, 's', label='original values')
+#plt.plot(np_t_25, p(np_t_25), 'r', label='Power series')
 
-#popt, pcov = curve_fit(func, t_25, s_25)
-#a = popt[0]
-#b = popt[1]
+#print(p)
+
+popt, pcov = curve_fit(func, t_25, s_25)
+a = popt[0]
+b = popt[1]
 #print("a:", a, "\n")
 #print("b:", b, "\n")
-#yvals = func(t_25, a, b)
+yvals = func(t_25, a, b)
 
-#plot1 = plt.plot(t_25, s_25, 'x')
+plot1 = plt.plot(t_25, s_25, 'x', label='origin data')
 #plot2 = plt.plot(t_25, yvals, 'r', label='curve_fit values')
-#plt.legend(loc=4)
-#plt.show()
+
+plt.legend(loc=4)
+plt.show()
 
 #t_40 = col_to_list(4, 3, 3)
 #s_40 = col_to_list(4, 4, 4)

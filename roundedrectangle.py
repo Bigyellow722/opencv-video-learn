@@ -21,7 +21,7 @@ def showImgInNewWindow(name, img):
 def showContours(img, contours):
     img_contours = np.copy(img)
     cv2.drawContours(img_contours, contours, -1, (0, 0, 0), 2)
-    showImgInNewWindow("Contours", img_contours)
+    #showImgInNewWindow("Contours", img_contours)
 
 def denoise(gray, method):
     """灰度图的去噪。
@@ -35,11 +35,11 @@ def denoise(gray, method):
     """
     if method == "MedianBlur":
         blurred = cv2.medianBlur(gray, 5)
-        showImgInNewWindow("MedianBlur", blurred)
+        #showImgInNewWindow("MedianBlur", blurred)
         return blurred
     elif method == "GuassBlur":
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        showImgInNewWindow("GuassBlur", blurred)
+        #showImgInNewWindow("GuassBlur", blurred)
         return blurred
     else:
         print("No such denoise method!")
@@ -58,11 +58,11 @@ def binarize(gray, method):
     """
     if method == "AdaptiveThreshold":
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 3, 1)
-        showImgInNewWindow("AdaptiveThreshold", thresh)
+        #showImgInNewWindow("AdaptiveThreshold", thresh)
         return thresh
     elif method == "Canny":
         thresh = cv2.Canny(gray, 50, 100)
-        showImgInNewWindow("Canny", thresh)
+        #showImgInNewWindow("Canny", thresh)
         return thresh
     else:
         print("No such binarize method!")
@@ -123,12 +123,8 @@ def maskImage(hsv_image, degree, time):
         hsv_up = np.array([130, 190, 250])
     elif degree == Degree.DEGREE_50:
         #50-degree:
-        if time >= 100:
-            hsv_low = np.array([0, 10, 55])
-            hsv_up = np.array([170, 210, 180])
-        else:
-            hsv_low = np.array([20, 25, 55])
-            hsv_up = np.array([160, 210, 140])
+        hsv_low = np.array([40, 40, 55])
+        hsv_up = np.array([175, 230, 160])
     elif degree == Degree.DEGREE_60:
         #60-degree:
         if time < 10:
@@ -156,7 +152,7 @@ def maskImage(hsv_image, degree, time):
     mask = cv2.inRange(hsv_image, hsv_low, hsv_up);
     output = cv2.bitwise_and(hsv_image, hsv_image, mask = mask)
     bgr_output = cv2.cvtColor(output, cv2.COLOR_HSV2BGR)
-    showImgInNewWindow("mask", bgr_output)
+    #showImgInNewWindow("mask", bgr_output)
     return bgr_output
 
 
@@ -188,7 +184,7 @@ def shapeDetect(img_path, degree, time):
     img = cv2.imread(img_path)
 
     print(img.shape)
-    showImgInNewWindow("Original", img)
+    #showImgInNewWindow("Original", img)
 
     '''
     25-degree: x:500-880, y:200-440
@@ -199,30 +195,30 @@ def shapeDetect(img_path, degree, time):
     elif degree == Degree.DEGREE_40:
         cropped_img = img[200:440, 375:850]
     elif degree == Degree.DEGREE_50:
-        cropped_img = img[150:440, 375:980]
+        cropped_img = img[200:440, 500:980]
     elif degree == Degree.DEGREE_60:
         cropped_img = img[135:480, 500:1000]
     else:
         cropped_img = img
 
-    showImgInNewWindow("CROPPED", cropped_img)
+    #showImgInNewWindow("CROPPED", cropped_img)
 
 
     blurred = cv2.GaussianBlur(cropped_img, (5, 5), 0)
 
-    showImgInNewWindow("BLURRED", blurred)
+    #showImgInNewWindow("BLURRED", blurred)
 
     hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 
-    showImgInNewWindow("HSV", hsv)
-    cv2.setMouseCallback("HSV", getPosHSV, hsv)
+    #showImgInNewWindow("HSV", hsv)
+    #cv2.setMouseCallback("HSV", getPosHSV, hsv)
 
     mask_img = maskImage(hsv, degree, time)
 
     gray = cv2.cvtColor(mask_img, cv2.COLOR_BGR2GRAY)
 
     # 转换为灰度图
-    showImgInNewWindow("Gray", gray)
+    #showImgInNewWindow("Gray", gray)
 
     # 去噪
     denoised = denoise(gray, "MedianBlur")
@@ -270,12 +266,16 @@ def shapeDetect(img_path, degree, time):
         if (area > area_list[0] and area < area_list[1]):
             print("x:", x, "y:", y, "w:", w, "h:", h)
             rect_img = cv2.rectangle(cropped_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            cv2.imshow("rect", rect_img)
+            #cv2.imshow("rect", rect_img)
             if degree == Degree.DEGREE_60:
                 rect_out = cropped_img[y:y+h-10, x+30:x+w-30]
             else:
                 rect_out = cropped_img[y:y+h, x:x+w]
-            cv2.imshow("rect_out", rect_out)
+            output_name = img_path[:-8] + "output/" + img_path[-8:]
+            #print("===============output=========")
+            #print(output_name)
+            #print("===============end=========")
+            cv2.imwrite(output_name, rect_out)
             drawBgrPlt(rect_out)
 
 
@@ -317,18 +317,18 @@ file_prefix = ["25-degree", "40-degree", "50-degree", "60-degree"];
 
 def write_bgr_to_file(degree):
     global file_prefix
-    r_file=open(file_prefix[degree] + "_r.txt", "w")
-    g_file=open(file_prefix[degree] + "_g.txt", "w")
-    b_file=open(file_prefix[degree] + "_b.txt", "w")
+    r_file=open(file_prefix[degree.value] + "_r.txt", "w")
+    g_file=open(file_prefix[degree.value] + "_g.txt", "w")
+    b_file=open(file_prefix[degree.value] + "_b.txt", "w")
     global r_list
     global g_list
     global b_list
     for r in r_list:
-        r_file.write(r+"\n")
+        r_file.write(str(r)+"\n")
     for g in g_list:
-        g_file.write(g+"\n")
+        g_file.write(str(g)+"\n")
     for b in b_list:
-        b_file.write(b+"\n")
+        b_file.write(str(b)+"\n")
     r_file.close()
     r_file.close()
     r_file.close()
@@ -337,17 +337,17 @@ def write_bgr_to_file(degree):
 def main():
 
 
-    degree_60 = '/home/wqy/rasp_space/videos/60-degree'
-    file_list = findAllPng(degree_60)
+    degree_50 = '/home/wqy/rasp_space/videos/machine-learn/40-degree'
+    file_list = findAllPng(degree_50)
     for img_path in file_list:
         print(img_path)
-        shapeDetect(img_path, Degree.DEGREE_60, int(img_path[-8:-4]))
+        shapeDetect(img_path, Degree.DEGREE_40, int(img_path[-8:-4]))
     print(b_list)
     print(g_list)
     print(r_list)
     print('\n')
-    drawPlot()
-    write_bgr_to_file(Degree.DEGREE_60)
+    #drawPlot()
+    #write_bgr_to_file(Degree.DEGREE_25)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     '''
